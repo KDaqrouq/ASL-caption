@@ -1,3 +1,5 @@
 node_modules/
 dist/
 *.log
+# Copied from node_modules/@mediapipe/tasks-vision by scripts/ensure-model.mjs
+public/wasm/vision_wasm_internal.*

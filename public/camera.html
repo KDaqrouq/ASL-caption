@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ASL captions camera</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+      /* Mirrored like a selfie view; the skeleton canvas is mirrored with it. */
+      #stage {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform: scaleX(-1);
+      }
+      video,
+      canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <video id="video" muted playsinline></video>
+      <canvas id="skeleton"></canvas>
+    </div>
+    <script src="camera.js"></script>
+  </body>
+</html>

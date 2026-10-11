@@ -11,6 +11,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .asl-panel {
   pointer-events: auto;
   position: fixed;
@@ -24,13 +28,32 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.12);
   z-index: 2147483647;
+  max-height: calc(100vh - 112px);
+  overflow-y: auto;
+  transition: border-color 0.15s ease, width 0.15s ease;
 }
 
-.asl-panel video {
+.asl-panel.asl-teaching {
+  width: 300px;
+}
+
+.asl-panel.asl-signing {
+  border-color: #8ab4f8;
+}
+
+.asl-panel.asl-recording {
+  border-color: #f28b82;
+  box-shadow: 0 0 0 2px rgba(242, 139, 130, 0.5), 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.asl-camera {
+  display: block;
   width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 0;
   border-radius: 6px;
   background: #000;
-  display: block;
+  pointer-events: none;
 }
 
 .asl-panel .asl-row {
@@ -63,18 +86,114 @@
   line-height: 1.35;
 }
 
-.asl-panel .asl-queue-row {
+.asl-panel button.asl-secondary {
+  background: #3c4043;
+}
+
+.asl-panel button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.asl-panel .asl-auto-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #e8eaed;
+  cursor: pointer;
 }
 
-.asl-panel .asl-queue-row input[type='checkbox'] {
+.asl-panel .asl-auto-row input[type='checkbox'] {
   width: 16px;
   height: 16px;
+  margin: 0;
   cursor: pointer;
   flex-shrink: 0;
+}
+
+.asl-teach {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.asl-teach .asl-hint {
+  margin: 0 0 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #bdc1c6;
+}
+
+.asl-teach-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  font-size: 12px;
+}
+
+.asl-teach-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.asl-count {
+  min-width: 22px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 8px;
+  background: #5f6368;
+}
+
+.asl-count.asl-enough {
+  background: #137333;
+}
+
+.asl-panel .asl-teach-row button {
+  flex: 0 0 auto;
+  width: 28px;
+  padding: 4px 0;
+  font-size: 12px;
+  background: #3c4043;
+}
+
+.asl-panel .asl-teach-row button.asl-rec {
+  color: #f28b82;
+}
+
+.asl-teach .asl-eval {
+  font-size: 11px;
+  color: #bdc1c6;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.asl-teach .asl-eval:empty {
+  display: none;
+}
+
+.asl-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.asl-panel .asl-tools button {
+  padding: 6px 4px;
+  font-size: 11px;
+  background: #3c4043;
+}
+
+.asl-panel .asl-tools button.asl-danger {
+  background: #a50e0e;
 }
 
 .asl-subtitle-wrap {
@@ -179,6 +298,7 @@
 
 .asl-fallback .choose-row button {
   flex: 1;
+  font-size: 13px;
   cursor: pointer;
   border: none;
   border-radius: 6px;
@@ -186,4 +306,8 @@
   background: #1a73e8;
   color: #fff;
   font-weight: 600;
+}
+
+.asl-fallback .choose-row button.retry {
+  background: #5f6368;
 }

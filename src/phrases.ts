@@ -1,8 +1,8 @@
-/** Nine supported captions from PRD (full string shown in subtitle bar). */
+/** Nine supported captions from the PRD (full string shown in the subtitle bar). */
 export const PHRASES = [
   'ASL Speaker: Can you repeat that?',
-  'ASL Speaker: I\'m having technical difficulties.',
-  'ASL Speaker: Let\'s take a break.',
+  "ASL Speaker: I'm having technical difficulties.",
+  "ASL Speaker: Let's take a break.",
   'ASL Speaker: Can you slow down?',
   'ASL Speaker: Goodbye.',
   'ASL Speaker: Thank you.',
@@ -11,10 +11,23 @@ export const PHRASES = [
   'ASL Speaker: No.',
 ] as const;
 
-export type PhraseIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+/**
+ * ASL glosses suggested for each phrase. The recognizer learns whatever the signer
+ * records, so regional variants work as long as they are recorded the same way.
+ */
+export const GLOSSES = [
+  'AGAIN',
+  'TECHNICAL PROBLEM',
+  'BREAK',
+  'SLOW',
+  'BYE',
+  'THANK-YOU',
+  'BLESS-YOU',
+  'YES',
+  'NO',
+] as const;
 
-export const PHRASE_IDS = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9'] as const;
-
-export function phraseLabel(i: number): string {
-  return PHRASE_IDS[i] ?? `P${i + 1}`;
+/** The phrase without the "ASL Speaker:" prefix, for buttons and status text. */
+export function shortPhrase(i: number): string {
+  return (PHRASES[i] ?? '').replace(/^ASL Speaker:\s*/, '').replace(/\.$/, '');
 }
