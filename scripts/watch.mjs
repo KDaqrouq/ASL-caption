@@ -1,6 +1,6 @@
-// Rebuilds both bundles (content.js and camera.js) into dist/ on every change.
+// Rebuilds every bundle (content.js, camera.js, page-hook.js) into dist/ on each change.
 import { build } from 'vite';
 
-for (const mode of ['production', 'camera']) {
+for (const mode of ['content', 'camera', 'page-hook']) {
   await build({ mode, build: { watch: {}, emptyOutDir: false } });
 }

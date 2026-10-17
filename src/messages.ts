@@ -13,3 +13,11 @@ export type CameraMessage =
   | { type: 'frame'; frame: Frame };
 
 export type ControlMessage = { type: 'recording'; on: boolean };
+
+/**
+ * Window event from the content script to the page hook (pageHook.ts), which runs in
+ * Meet's own JavaScript world. `detail` is a JSON-encoded `OutgoingMessage`.
+ */
+export const OUTGOING_EVENT = 'asl-captions:outgoing';
+
+export type OutgoingMessage = { type: 'caption'; text: string } | { type: 'enabled'; on: boolean };

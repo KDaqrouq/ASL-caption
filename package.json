@@ -8,7 +8,7 @@
   },
   "scripts": {
     "prebuild": "node scripts/ensure-model.mjs",
-    "build": "vite build && vite build --mode camera",
+    "build": "vite build --mode content && vite build --mode camera && vite build --mode page-hook",
     "watch": "node scripts/ensure-model.mjs && node scripts/watch.mjs",
     "typecheck": "tsc -p .",
     "test": "vitest run",

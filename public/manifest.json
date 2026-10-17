@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ASL Meeting Captions",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Captions ASL signs in Google Meet using on-device hand tracking and a recognizer trained on your own signing.",
   "permissions": [
     "storage"
@@ -10,6 +10,16 @@
     "https://meet.google.com/*"
   ],
   "content_scripts": [
+    {
+      "matches": [
+        "https://meet.google.com/*"
+      ],
+      "js": [
+        "page-hook.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
     {
       "matches": [
         "https://meet.google.com/*"
