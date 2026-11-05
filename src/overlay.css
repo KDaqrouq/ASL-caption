@@ -11,6 +11,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .asl-panel {
   pointer-events: auto;
   position: fixed;
@@ -24,13 +28,135 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.12);
   z-index: 2147483647;
+  max-height: calc(100vh - 112px);
+  overflow-y: auto;
+  transition: border-color 0.15s ease, width 0.15s ease;
 }
 
-.asl-panel video {
+.asl-panel.asl-teaching {
+  width: 300px;
+}
+
+.asl-panel.asl-signing {
+  border-color: #8ab4f8;
+}
+
+.asl-panel.asl-recording {
+  border-color: #f28b82;
+  box-shadow: 0 0 0 2px rgba(242, 139, 130, 0.5), 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Stays visible (and draggable) while a tall panel scrolls. */
+.asl-header {
+  position: sticky;
+  top: -10px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -10px -10px 8px;
+  padding: 8px 8px 4px 12px;
+  background: rgb(20, 20, 24);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.asl-dragging,
+.asl-dragging .asl-header {
+  cursor: grabbing;
+}
+
+.asl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9aa0a6;
+  flex-shrink: 0;
+}
+
+.asl-panel[data-tracking='ready'] .asl-dot {
+  background: #81c995;
+}
+
+.asl-panel[data-tracking='error'] .asl-dot {
+  background: #f28b82;
+}
+
+.asl-title {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e8eaed;
+}
+
+.asl-panel .asl-header button.asl-collapse {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 22px;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  background: transparent;
+  color: #bdc1c6;
+}
+
+.asl-panel .asl-header button.asl-collapse:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Minimised: just a round live camera thumbnail whose ring shows the state. */
+.asl-panel.asl-collapsed {
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border-radius: 50%;
+  border-width: 3px;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.asl-panel.asl-collapsed > :not(.asl-camera) {
+  display: none !important;
+}
+
+.asl-panel.asl-collapsed .asl-camera {
   width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 50%;
+}
+
+.asl-panel.asl-collapsed[data-tracking='ready'] {
+  border-color: #81c995;
+}
+
+.asl-panel.asl-collapsed[data-tracking='error'] {
+  border-color: #f28b82;
+}
+
+.asl-panel.asl-collapsed.asl-signing {
+  border-color: #8ab4f8;
+}
+
+.asl-panel.asl-collapsed.asl-recording {
+  border-color: #f28b82;
+}
+
+.asl-panel.asl-collapsed:focus-visible {
+  outline: 2px solid #8ab4f8;
+  outline-offset: 2px;
+}
+
+.asl-camera {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 0;
   border-radius: 6px;
   background: #000;
-  display: block;
+  pointer-events: none;
 }
 
 .asl-panel .asl-row {
@@ -63,18 +189,154 @@
   line-height: 1.35;
 }
 
-.asl-panel .asl-queue-row {
+.asl-panel button.asl-secondary {
+  background: #3c4043;
+}
+
+.asl-panel button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.asl-panel .asl-check-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #e8eaed;
+  cursor: pointer;
 }
 
-.asl-panel .asl-queue-row input[type='checkbox'] {
+.asl-panel .asl-check-row input[type='checkbox'] {
   width: 16px;
   height: 16px;
+  margin: 0;
   cursor: pointer;
   flex-shrink: 0;
+}
+
+.asl-teach {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.asl-teach .asl-hint {
+  margin: 0 0 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #bdc1c6;
+}
+
+.asl-teach-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  font-size: 12px;
+}
+
+.asl-teach-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.asl-count {
+  min-width: 22px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 8px;
+  background: #5f6368;
+}
+
+.asl-count.asl-enough {
+  background: #137333;
+}
+
+.asl-panel .asl-teach-row button {
+  flex: 0 0 auto;
+  width: 28px;
+  padding: 4px 0;
+  font-size: 12px;
+  background: #3c4043;
+}
+
+.asl-panel .asl-teach-row button.asl-rec {
+  color: #f28b82;
+}
+
+.asl-panel .asl-teach-row button.asl-remove {
+  width: 22px;
+  background: transparent;
+  color: #9aa0a6;
+}
+
+.asl-panel .asl-teach-row button.asl-remove:hover,
+.asl-panel button.asl-armed {
+  background: #a50e0e;
+  color: #fff;
+}
+
+.asl-add-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.asl-add-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #5f6368;
+  background: #3c4043;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+}
+
+.asl-add-row input::placeholder {
+  color: #9aa0a6;
+}
+
+.asl-panel .asl-add-row button {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.asl-teach .asl-eval {
+  font-size: 11px;
+  color: #bdc1c6;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.asl-teach .asl-eval:empty {
+  display: none;
+}
+
+.asl-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.asl-panel .asl-tools button {
+  padding: 6px 4px;
+  font-size: 11px;
+  background: #3c4043;
+}
+
+.asl-panel .asl-tools button.asl-danger {
+  background: #a50e0e;
 }
 
 .asl-subtitle-wrap {
@@ -179,6 +441,7 @@
 
 .asl-fallback .choose-row button {
   flex: 1;
+  font-size: 13px;
   cursor: pointer;
   border: none;
   border-radius: 6px;
@@ -186,4 +449,8 @@
   background: #1a73e8;
   color: #fff;
   font-weight: 600;
+}
+
+.asl-fallback .choose-row button.retry {
+  background: #5f6368;
 }

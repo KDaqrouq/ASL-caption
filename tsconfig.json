@@ -6,8 +6,18 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["chrome"]
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "chrome"
+    ]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "test/**/*.ts"
+  ]
 }
