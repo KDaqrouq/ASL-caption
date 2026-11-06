@@ -14,9 +14,11 @@ A Chrome extension that watches a signer's hands through the webcam, recognises 
 ![Vitest](https://img.shields.io/badge/tested_with-Vitest-6E9F18?logo=vitest&logoColor=white)
 ![On-device](https://img.shields.io/badge/privacy-100%25_on--device-success)
 
-<img src="docs/images/hero.png" alt="A Meet-style call: the signer's video tile carries the caption 'ASL Speaker: Yes.', and the extension panel on the right shows the live hand-tracking preview" width="900">
+### ▶️ [Watch the demo video](https://youtu.be/MYHPJZgBtAI)
 
-<sub>Automated test run in Chrome: a stock photo is fed in as a fake webcam, and the large tile is the video as the other participants receive it over WebRTC.</sub>
+<a href="https://youtu.be/MYHPJZgBtAI"><img src="docs/images/demo-yes.jpg" alt="A real Google Meet call: Ahmed is speaking in the main tile, Khaled signs in the extension panel on the right, and the caption 'ASL Speaker: Yes.' appears in the call" width="900"></a>
+
+<sub>A real Google Meet call from the demo. Khaled signs in the panel on the right, and his signs show up in the call as captions.</sub>
 
 </div>
 
@@ -41,8 +43,10 @@ Video calls are built for spoken language. A deaf participant who signs often ha
 | 🔒 **Private by design** | Video, landmarks and training data never leave the machine. No server, no account. |
 
 <p align="center">
-  <img src="docs/images/teach-panel.png" alt="Teach panel with a live camera preview, hand skeleton overlay, and a list of phrases with example counts and record buttons" width="320">
+  <img src="docs/images/demo-bless-you.jpg" alt="Live Meet call with the caption 'ASL Speaker: Bless you.' shown over the conversation" width="440">
+  <img src="docs/images/demo-thank-you.jpg" alt="Live Meet call with the caption 'ASL Speaker: Thank you.' shown at the end of the conversation" width="440">
 </p>
+<p align="center"><sub>More captions from the same call: "Bless you." and "Thank you."</sub></p>
 
 ## How it works
 
