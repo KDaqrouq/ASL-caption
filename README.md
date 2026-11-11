@@ -1,190 +1,97 @@
-<div align="center">
+# ASL Meeting Captions
 
-# 🤟 ASL Meeting Captions
+A Chrome extension that captions American Sign Language in Google Meet. You sign a phrase on camera, the extension recognizes it, and the caption is drawn into your outgoing video, so everyone in the call can read it without installing anything.
 
-**Real-time American Sign Language captions for Google Meet, running entirely in the browser.**
+Demo video: https://youtu.be/MYHPJZgBtAI
 
-A Chrome extension that watches a signer's hands through the webcam, recognises the signed phrase, and puts it on screen as a caption that **everyone in the call can see**, with no extra software for the other participants.
+<a href="https://youtu.be/MYHPJZgBtAI"><img src="docs/images/demo-yes.jpg" alt="Google Meet call with Ahmed in the main tile, Khaled signing in the extension panel on the right, and the caption 'ASL Speaker: Yes.'" width="900"></a>
 
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![Chrome MV3](https://img.shields.io/badge/Chrome_Extension-MV3-4285F4?logo=googlechrome&logoColor=white)
-![MediaPipe](https://img.shields.io/badge/MediaPipe-Hand_Landmarker-0097A7?logo=google&logoColor=white)
-![WebRTC](https://img.shields.io/badge/WebRTC-Insertable_Streams-333333?logo=webrtc&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
-![Vitest](https://img.shields.io/badge/tested_with-Vitest-6E9F18?logo=vitest&logoColor=white)
-![On-device](https://img.shields.io/badge/privacy-100%25_on--device-success)
+A frame from the demo call. I'm signing in the small panel on the right while Ahmed talks, and "Yes" just came through as a caption.
 
-### ▶️ [Watch the demo video](https://youtu.be/MYHPJZgBtAI)
+## What it does
 
-<a href="https://youtu.be/MYHPJZgBtAI"><img src="docs/images/demo-yes.jpg" alt="A real Google Meet call: Ahmed is speaking in the main tile, Khaled signs in the extension panel on the right, and the caption 'ASL Speaker: Yes.' appears in the call" width="900"></a>
+It starts with nine common meeting phrases and you can add your own. To teach it a phrase, you record yourself signing it about five times. A built-in self-test then estimates accuracy and tells you which phrases need more examples.
 
-<sub>A real Google Meet call from the demo. Khaled signs in the panel on the right, and his signs show up in the call as captions.</sub>
+During a call you sign, then press Space (or turn on auto-captioning). If it isn't sure what you signed, it asks you to confirm or pick the right phrase, and your answer is saved as another training example, so it keeps adapting to how you sign.
 
-</div>
-
----
-
-## The problem
-
-Video calls are built for spoken language. A deaf participant who signs often has to type in chat while everyone else talks, or rely on someone in the call knowing ASL. Meet's built-in captions only transcribe speech.
-
-**ASL Meeting Captions** closes part of that gap. The signer signs a phrase, and a caption such as **"ASL Speaker: Can you slow down?"** appears in their video tile for everyone in the meeting.
-
-## Features
-
-| | |
-|---|---|
-| ✋ **Sign recognition, not pose matching** | Tracks both hands in 3D, follows how they *move* relative to the face, and classifies the whole motion of a sign. |
-| 🎯 **Learns your signing in minutes** | Record a phrase about 5 times and it's ready. A built-in self-test estimates accuracy and points out phrases that need more examples. |
-| 📺 **Captions everyone can see** | Captions are drawn into the outgoing camera video, so every participant sees them. Nobody else has to install anything. |
-| ✍️ **Your own vocabulary** | Starts with nine common meeting phrases; add, teach and remove your own. |
-| 🔁 **Gets better with use** | When it's unsure, it asks you to confirm or pick the phrase, and saves your answer as a new training example. |
-| ⌨️ **Fits a live call** | Press <kbd>Space</kbd> after a sign, or turn on auto-captioning. The panel can be dragged anywhere or minimised to a small camera bubble. |
-| 🔒 **Private by design** | Video, landmarks and training data never leave the machine. No server, no account. |
+Everything runs locally in the browser. Video, landmarks and training data never leave your machine, and there's no server or account.
 
 <p align="center">
-  <img src="docs/images/demo-bless-you.jpg" alt="Live Meet call with the caption 'ASL Speaker: Bless you.' shown over the conversation" width="440">
-  <img src="docs/images/demo-thank-you.jpg" alt="Live Meet call with the caption 'ASL Speaker: Thank you.' shown at the end of the conversation" width="440">
+  <img src="docs/images/demo-bless-you.jpg" alt="Meet call with the caption 'ASL Speaker: Bless you.'" width="440">
+  <img src="docs/images/demo-thank-you.jpg" alt="Meet call with the caption 'ASL Speaker: Thank you.'" width="440">
 </p>
-<p align="center"><sub>More captions from the same call: "Bless you." and "Thank you."</sub></p>
 
 ## How it works
 
-```mermaid
-flowchart LR
-    A[Webcam] --> B["MediaPipe<br/>Hand Landmarker + Face Detector<br/>(WASM, on-device)"]
-    B --> C["Features per frame<br/>handshape · palm orientation ·<br/>position relative to face"]
-    C --> D["Sign segmentation<br/>start on motion,<br/>end on stillness or hands down"]
-    D --> E["DTW nearest-neighbour<br/>vs. your recorded examples"]
-    E -->|confident| F["Caption on screen<br/>+ in outgoing video"]
-    E -->|unsure| G[Confirm / choose card]
-    G -->|your answer becomes<br/>a new example| E
-```
+MediaPipe's Hand Landmarker tracks 21 3D points on each hand, and a face detector finds the face. Each frame gets turned into a small feature vector: the hand's shape relative to the wrist, scaled by palm size, plus where the wrist is relative to the face. That makes it work whether you sit close to the camera or far from it.
 
-1. **Tracking.** MediaPipe's Hand Landmarker gives 21 3D landmarks for each of up to two hands, and a face detector marks where the face is.
-2. **Features.** Each frame becomes a compact vector per hand: joint positions relative to the wrist and normalised by palm size (handshape and orientation), plus the wrist's position relative to the face, measured in face widths. The result doesn't depend on how far you sit from the camera or where you are in the frame.
-3. **Segmentation.** ASL is motion, not a frozen pose. A sign starts when a hand moves or comes into view, and ends when the hands hold still or drop out of view. Speeds are measured in palm lengths per second over a 150 ms baseline, so landmark jitter doesn't read as movement.
-4. **Classification.** The sign is compared with your examples using **dynamic time warping (DTW)**, which lines up a fast and a slow performance of the same sign. Confidence combines two things: how clearly the best phrase beats the others (a softmax margin), and how close the sign is to that phrase's typical examples. A movement that matches nothing therefore gets low confidence instead of a wrong caption.
-5. **Continuous learning.** Confirmations and corrections from the low-confidence card are stored as new examples, capped per phrase so the model follows how you sign now.
+Signs in ASL are movements, so the extension looks at whole motions instead of single poses. A sign starts when a hand moves or comes into view and ends when your hands go still or drop. The recorded motion is compared with your saved examples using dynamic time warping, which can match a fast and a slow version of the same sign. If a movement doesn't look like any phrase you taught, it gets a low confidence score and you're asked to confirm, so random gestures don't turn into wrong captions.
 
-> **Why no pretrained model?** Public ASL datasets don't cover these meeting phrases, and signing varies from person to person and region to region. A few-shot recogniser tuned to one signer is much more reliable for this use case, and it lets users define their own vocabulary.
+I didn't use a pretrained ASL model because the public datasets don't cover meeting phrases like these, and signing varies a lot between people. A few-shot model trained on one person's signing turned out to be more reliable, and it lets you pick your own vocabulary.
 
-## Architecture
+Getting the captions into the video took some work. The extension runs in three places:
 
-The extension runs code in three separate JavaScript contexts. Each one exists for a reason.
+- An extension page (`camera.html`) inside the Meet tab runs the camera and hand tracking. Meet's security policy can block WebAssembly in content scripts, so MediaPipe has to run here. It's a separate process, so tracking doesn't slow Meet down.
+- The content script draws the panel and runs recognition. It talks to the camera page over a private `MessageChannel`.
+- A small script in Meet's own page context wraps `RTCPeerConnection` and swaps the camera track on its way into the call for a copy with the caption drawn on each frame. Meet still sees its original track, so the self-view, background effects and screen sharing work as normal.
 
-```mermaid
-flowchart TB
-    subgraph Meet["meet.google.com tab"]
-        direction TB
-        H["<b>Page hook</b> (Meet's own JS world)<br/>wraps RTCPeerConnection.addTrack / addTransceiver /<br/>RTCRtpSender.replaceTrack → captioned copy of the camera track"]
-        CS["<b>Content script</b> (isolated world)<br/>overlay UI · segmentation · DTW recogniser ·<br/>teach mode · storage"]
-        subgraph Frame["<b>Camera frame</b> (extension origin, own process)"]
-            V["getUserMedia + MediaPipe WASM<br/>→ landmarks every frame"]
-        end
-    end
-    V -- "private MessageChannel<br/>(frames)" --> CS
-    CS -- "window event<br/>(caption text)" --> H
-    H -- "captioned video" --> Peers(("Other participants"))
-```
+## Running it
 
-| Context | Why it's separate |
-|---|---|
-| **Camera frame** (`camera.html`) | A content script shares Meet's security policy, which can block compiling WebAssembly, and MediaPipe's loader injects a `<script>` that would run in the wrong JavaScript world. An extension page has its own policy and runs in its own process, so hand tracking never competes with Meet's main thread. It reuses Meet's camera permission, so there's no extra prompt. |
-| **Content script** | Owns the UI (inside a shadow root, so Meet's CSS can't affect it) and all recognition logic. Talks to the camera frame over a `MessageChannel` port the page can't read. |
-| **Page hook** (`"world": "MAIN"`) | Only code in the page's own world can see Meet's WebRTC objects. It replaces the camera track *on its way into the call* with a copy that has the caption drawn on each frame (`MediaStreamTrackProcessor` → `OffscreenCanvas` → `MediaStreamTrackGenerator`). Meet still sees its original track, so its self-view, background effects and screen sharing are untouched. |
-
-## Engineering highlights
-
-- **Diagnosed why hand tracking never started on Meet.** It came from how Chrome isolates extension code: MediaPipe's loader defined its WebAssembly factory in the page's JavaScript world, where the content script couldn't see it, and the page's security policy could block WebAssembly entirely. The fix moved inference into an extension frame with its own policy, which also took it off Meet's main thread.
-- **Captions in the outgoing video with no visible side effects.** The hook swaps the camera track only on the send path, and a patched `RTCRtpSender.track` getter keeps returning Meet's original track, so Meet's own logic sees nothing different. Screen shares are detected (`displaySurface`) and left alone, and anything that fails falls back to the unmodified camera.
-- **Few-shot temporal classification with rejection.** Banded DTW over 32-step resampled sequences, per-phrase distance calibration learned from your own examples, and leave-one-out self-evaluation shown in the UI.
-- **Robust to real-world noise.** Handshape uses MediaPipe's metric world landmarks; position uses face-relative coordinates. Hand slots stay stable when MediaPipe flips left/right labels, and segmentation is jitter-tolerant.
-- **Data that survives upgrades.** Examples are keyed by stable phrase ids, older stored data and export files migrate automatically, and examples are compacted (trimmed, resampled, rounded) to keep storage small.
-- **Tested without a human in the loop:**
-  - **Unit tests** use a *synthetic signer*: a kinematic hand model that performs scripted versions of each sign with random speed, placement, camera distance and landmark noise. They check accuracy, faster or slower signing, flipped hand labels, rejection of random movement, segmentation and storage migration.
-  - **End-to-end tests** load the built extension into real Chrome, serve a stub Meet page with a strict CSP and Trusted Types, and feed generated video through Chrome's fake camera. They teach phrases through the actual UI, then check captions both on screen and in the video received over a loopback WebRTC connection.
-
-## Getting started
-
-**Requirements:** [Node.js](https://nodejs.org/) 20+ and Google Chrome.
+You need Node.js 20+ and Chrome.
 
 ```bash
 git clone https://github.com/KDaqrouq/fuzzy-goggles.git
 cd fuzzy-goggles
 npm install
-npm run build        # outputs the extension to dist/
+npm run build
 ```
 
-The build copies MediaPipe's WebAssembly runtime from `node_modules` and downloads the hand and face models the first time.
+The build copies MediaPipe's WebAssembly files and downloads the hand and face models the first time, so it needs internet access.
 
-**Install:** open `chrome://extensions`, enable **Developer mode**, click **Load unpacked** and pick the **`dist`** folder.
+Then open `chrome://extensions`, turn on Developer mode, click Load unpacked and pick the `dist` folder.
 
-**Use it in a call:**
+To use it:
 
 1. Join a call on `meet.google.com` and allow the camera.
-2. **Teach:** open **Teach**, press **●** next to a phrase, wait for the countdown, sign once and lower your hands. Repeat about 5 times per phrase (the counter turns green), then run **Self-test**.
-3. **Caption:** sign, then press <kbd>Space</kbd> or **Translate**, or turn on **Auto-caption each sign**.
-4. **Show captions in my video** (on by default) adds the caption to the video the others receive. After installing or reloading the extension, turn your Meet camera off and on once so the new video path is used.
+2. Open Teach, press the record button next to a phrase, sign it once after the countdown and lower your hands. Do this about five times per phrase, then run Self-test.
+3. Sign, then press Space or Translate. You can also turn on "Auto-caption each sign".
 
-To add your own phrases, type one into the box at the bottom of Teach and press **Add**. **Export** and **Import** move your phrases and examples to another machine.
+After installing or reloading the extension, turn your Meet camera off and on once so the captions get added to your video. Export and Import in the Teach tab move your phrases and examples to another computer.
 
-## Development
+## Tests
 
 ```bash
-npm run watch        # rebuild all bundles on change, then reload the extension
-npm test             # unit tests (recogniser, segmenter, storage)
+npm test             # unit tests
 npm run typecheck
-npm run e2e          # loads dist/ in Chrome against a stub Meet page (set CHROME_PATH if needed)
+npm run e2e          # end-to-end in Chrome (set CHROME_PATH if needed)
 ```
 
-<details>
-<summary><b>Project structure</b></summary>
+The unit tests use a simulated signer: a hand model that performs each sign at random speeds, positions and distances from the camera, with noise added to the landmarks. The end-to-end tests load the built extension into Chrome, run it against a stub Meet page with a fake camera, teach phrases through the real UI, and check that the captions show up in the video received over WebRTC.
+
+## Limitations
+
+- It recognizes single phrases from a vocabulary you teach it. It doesn't translate open-ended ASL, which would also need facial grammar and continuous signing.
+- It's trained on one person. You can export your examples, but they aren't shared between users.
+- Accuracy depends on lighting and on how consistently you record each phrase.
+
+Things I'd like to add next: fingerspelling for names, needing fewer examples per phrase, text-to-speech, and Zoom and Teams support.
+
+## Code layout
 
 ```
-public/manifest.json            Extension manifest (MV3)
-public/camera.html              Camera frame: webcam preview + hand tracking
-public/wasm/                    MediaPipe WASM (copied at build) + models
-scripts/ensure-model.mjs        Prebuild: copy WASM, download models
-scripts/e2e.mjs                 Chrome smoke test against a stub Meet page
-scripts/watch.mjs               Watch mode for all three bundles
-src/content.ts                  Overlay UI, triggers, teach mode, phrases, captions
-src/camera.ts                   Runs in camera.html; streams landmarks to the content script
-src/vision.ts                   MediaPipe setup and per-frame feature extraction
-src/pageHook.ts                 Meet's page world: captions in the outgoing WebRTC video
-src/draggable.ts                Drag-to-move panel
-src/recognition/features.ts     Frames → feature vectors (face-anchored, scale-invariant)
-src/recognition/segmenter.ts    Splits the live stream into individual signs
-src/recognition/recognizer.ts   DTW classifier, confidence, leave-one-out self-test
-src/phrases.ts, src/storage.ts  Phrases, examples, settings, export/import, migrations
-test/                           Unit tests + synthetic signer
+public/camera.html              camera page: webcam preview and hand tracking
+src/content.ts                  panel UI, teach mode, captions
+src/camera.ts                   sends landmarks from the camera page to the content script
+src/vision.ts                   MediaPipe setup and per-frame features
+src/pageHook.ts                 runs in Meet's page, adds captions to the outgoing video
+src/recognition/                features, sign segmentation, DTW recognizer
+src/phrases.ts, src/storage.ts  phrases, examples, settings, import/export
+scripts/                        build, watch and end-to-end scripts
+test/                           unit tests and the simulated signer
 ```
 
-</details>
+## Background
 
-<details>
-<summary><b>Troubleshooting</b></summary>
+This started as a hackathon project that used hand-geometry rules for nine fixed phrases (the original planning docs are in [`docs/`](docs/)). I later rebuilt it around trainable, motion-based recognition and added captions that the whole call can see.
 
-| Issue | What to try |
-|---|---|
-| No panel on Meet | The URL must be `meet.google.com`; reload the tab after installing the extension. |
-| "Camera blocked" | Allow the camera for Meet in site settings, and check the OS or another app isn't blocking it. |
-| "Hand tracking could not start" | Rebuild with network access for the first model download; `dist/wasm/` should contain `.wasm`, `.task` and `.tflite` files. |
-| Wrong phrase recognised | Run **Self-test**, add examples for weak phrases, and record in the lighting and seat position you use in calls. |
-| Others don't see captions | Check **Show captions in my video** is on, then turn your Meet camera off and on (or rejoin). |
-| <kbd>Space</kbd> does nothing | Focus may be in a text field; click outside it or use **Translate**. |
-
-</details>
-
-## Limitations and roadmap
-
-- Recognises **isolated phrases** from a vocabulary you teach. It does not translate open-ended ASL, which would also need facial grammar and continuous signing.
-- It is tuned to **one signer**. Examples can be exported to another machine but aren't shared between people.
-- The end-to-end tests use simulated camera feeds. Accuracy with real signers depends on lighting, framing and how consistently each phrase is recorded.
-- **Next:** fingerspelling for names and terms, data augmentation so 2–3 examples per phrase are enough, a text-to-speech option, and support for Zoom and Teams.
-
-## Origin
-
-Started as a hackathon MVP (an overlay with hand-geometry rules for nine phrases; the original PRD and plans are in [`docs/`](docs/)) and then rebuilt into a trainable, motion-based recogniser with captions shared with the whole call.
-
-**Author:** [Khaled Al Daqrouq](https://github.com/KDaqrouq)
+Made by [Khaled Al Daqrouq](https://github.com/KDaqrouq).
