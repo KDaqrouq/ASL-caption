@@ -28,7 +28,7 @@ Everything runs locally in the browser. Video, landmarks and training data never
   <img src="docs/images/teach-panel.png" alt="Teach panel listing the phrases, with 5 recorded examples each for Thank you, Bless you, Yes and No, and a self-test result of 100%" width="300">
 </p>
 
-On the left, both hands tracked mid-sign. On the right, the Teach panel after recording five examples each of four phrases. For these screenshots I played my webcam footage from the demo into the extension as a fake camera, so it's my real signing going through the current version.
+On the left, both hands tracked mid-sign. On the right, the Teach panel after recording five examples each of four phrases.
 
 ## How it works
 
