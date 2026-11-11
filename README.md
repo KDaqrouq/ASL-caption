@@ -99,8 +99,4 @@ scripts/                        build, watch and end-to-end scripts
 test/                           unit tests and the simulated signer
 ```
 
-## Background
-
-This started as a hackathon project that used hand-geometry rules for nine fixed phrases (the original planning docs are in [`docs/`](docs/)). I later rebuilt it around trainable, motion-based recognition and added captions that the whole call can see.
-
 Made by [Khaled Al Daqrouq](https://github.com/KDaqrouq).
