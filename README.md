@@ -4,9 +4,15 @@ A Chrome extension that captions American Sign Language in Google Meet. You sign
 
 Demo video: https://youtu.be/MYHPJZgBtAI
 
-<a href="https://youtu.be/MYHPJZgBtAI"><img src="docs/images/demo-yes.jpg" alt="Google Meet call with Ahmed in the main tile, Khaled signing in the extension panel on the right, and the caption 'ASL Speaker: Yes.'" width="900"></a>
+<p align="center">
+  <img src="docs/images/sign-to-caption.png" alt="Left: Khaled signing 'thank you' with the hand tracking drawn over his hand. Right: the extension panel showing 'Recognised Thank you (100%)', and below it the caption 'ASL Speaker: Thank you.'" width="640">
+</p>
 
-A frame from the demo call. I'm signing in the small panel on the right while Ahmed talks, and "Yes" just came through as a caption.
+Me signing "thank you", and the caption it produces a moment later.
+
+<a href="https://youtu.be/MYHPJZgBtAI"><img src="docs/images/demo-yes.jpg" alt="Google Meet call with Ahmed in the main tile, Khaled in the extension panel on the right, and the caption 'ASL Speaker: Yes.'" width="900"></a>
+
+The same thing in a real Meet call from the demo. Ahmed is talking, I'm in the panel on the right, and "Yes" just came through as a caption.
 
 ## What it does
 
@@ -17,9 +23,12 @@ During a call you sign, then press Space (or turn on auto-captioning). If it isn
 Everything runs locally in the browser. Video, landmarks and training data never leave your machine, and there's no server or account.
 
 <p align="center">
-  <img src="docs/images/demo-bless-you.jpg" alt="Meet call with the caption 'ASL Speaker: Bless you.'" width="440">
-  <img src="docs/images/demo-thank-you.jpg" alt="Meet call with the caption 'ASL Speaker: Thank you.'" width="440">
+  <img src="docs/images/tracking.png" alt="Extension panel with both of Khaled's hands tracked mid-sign" width="300">
+  &nbsp;&nbsp;
+  <img src="docs/images/teach-panel.png" alt="Teach panel listing the phrases, with 5 recorded examples each for Thank you, Bless you, Yes and No, and a self-test result of 100%" width="300">
 </p>
+
+On the left, both hands tracked mid-sign. On the right, the Teach panel after recording five examples each of four phrases. For these screenshots I played my webcam footage from the demo into the extension as a fake camera, so it's my real signing going through the current version.
 
 ## How it works
 
